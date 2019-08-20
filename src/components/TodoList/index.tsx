@@ -23,8 +23,8 @@ class TodoList extends Component<TodoListProps, TodoListState> {
     }
 
     handleKeyUp = (event: KeyboardEvent) => {
-        if(event.keyCode === 13) {
-            this.handleAddTodo()
+        if (event.keyCode === 13) {
+            this.handleAddTodo();
         }
     }
 
@@ -41,9 +41,27 @@ class TodoList extends Component<TodoListProps, TodoListState> {
         }
     }
 
+    handleDeleteTodoItem = (index: number) => {
+        const { todos } = this.state;
+        todos.splice(index, 1);
+        this.setState({ todos });
+    }
+
+    handleChangeTodoItem = (index: number, todoItem: string) => {
+        const { todos } = this.state;
+        todos.splice(index, 1, todoItem);
+        this.setState({ todos });
+    }
+
     render() {
         const TodoListContent = this.state.todos.map((todo, index) => {
-            return <TodoListItem todoItem = { todo } key = { todo } index = { index }  />
+            return <TodoListItem
+                todoItem = { todo }
+                key = { todo }
+                index = { index }
+                onDeleteTodoItem = { this.handleDeleteTodoItem }
+                onChangeTodoItem = { this.handleChangeTodoItem }
+            />
         });
 
         return (
