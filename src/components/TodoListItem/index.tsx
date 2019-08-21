@@ -1,4 +1,4 @@
-import React, { Component, ChangeEvent, KeyboardEvent, FocusEvent } from 'react';
+import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
 
 interface TodoItemProps {
   todoItem: string;
@@ -12,58 +12,50 @@ interface TodoItemState {
     todoItem: string
 }
 
-class TodoList extends Component<TodoItemProps, TodoItemState> {
-    constructor(props: TodoItemProps) {
-        super(props);
-        this.state = {
-            isShowInputItem: false,
-            todoItem: props.todoItem
-        }
+function TodoList(props: TodoItemProps) {
+    const { index, onDeleteTodoItem, onChangeTodoItem,  } = props;
+    const [isShowInputItem, setIsShowInputItem] = useState(false);
+    const [todoItem, setTodoItem] = useState(props.todoItem);
+
+    function deleteItem() {
+        onDeleteTodoItem(index);
     }
 
-    deleteItem = () => {
-        this.props.onDeleteTodoItem(this.props.index);
+    function handleShowInputItem() {
+        setIsShowInputItem(true);
     }
 
-    handleShowInputItem = () => {
-        this.setState({ isShowInputItem: true });
+    function handleInputEdit(event: ChangeEvent<HTMLInputElement>){
+        setTodoItem(event.target.value);
     }
 
-    handleInputEdit = (event: ChangeEvent<HTMLInputElement>) => {
-        this.setState({ todoItem: event.target.value });
-    }
-
-    handleInputEnter = (event: KeyboardEvent<HTMLInputElement> ) => {
+    function handleInputEnter(event: KeyboardEvent<HTMLInputElement>) {
         if (event.keyCode === 13) {
-            this.setState({ isShowInputItem: false });
-            this.props.onChangeTodoItem(this.props.index, this.state.todoItem );
+            setIsShowInputItem(false);
+            onChangeTodoItem(index, todoItem );
         }
     }
 
-    handleInputBlur = () => {
-        // this.props.onChangeTodoItem(this.props.index, this.state.todoItem );
+    function handleInputBlur() {
+        // onChangeTodoItem(index, todoItem );
     }
-    
-    render() {
-        const { index } = this.props;
-        const { isShowInputItem, todoItem } = this.state;
-        const spanItem = (<span onClick = { this.handleShowInputItem } >{ todoItem }</span>);
-        const inputItem = (<input
-            type="text"
-            value = { todoItem }
-            onChange = { this.handleInputEdit }
-            onKeyUp = { this.handleInputEnter }
-            onBlur = { this.handleInputBlur }
-        />);
-        const item = isShowInputItem ? inputItem : spanItem;
-        return (
-            <div className="todo-list-item">
-                <span>{ index + 1 }. </span>
-                { item }
-                <button onClick = { this.deleteItem }>delete</button>
-            </div>
-        );
-    }
+
+    const spanItem = (<span onClick = { handleShowInputItem } >{ todoItem }</span>);
+    const inputItem = (<input
+        type="text"
+        value = { todoItem }
+        onChange = { handleInputEdit }
+        onKeyUp = { handleInputEnter }
+        onBlur = { handleInputBlur }
+    />);
+    const item = isShowInputItem ? inputItem : spanItem;
+    return (
+        <div className="todo-list-item">
+            <span>{ index + 1 }. </span>
+            { item }
+            <button onClick = { deleteItem }>delete</button>
+        </div>
+    );
 }
 
 export default TodoList;
